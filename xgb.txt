@@ -1,0 +1,32 @@
+params = {
+        'min_child_weight': [1, 2, 4, 5, 6, 7, 8, 10, 11, 14, 15, 17, 21, 25, 50, 70],
+        'gamma': [0.5, 1, 1.5, 2, 5],
+        'subsample': [0.6, 0.8, 1.0, 1.5, 2, 2.5],
+        'colsample_bytree': [0.1, 0.2, 0.3, 0.4, 0.6, 0.8, 1.0],
+        'learning_rate': [0.1, 0.01, 0.2, 0.5, 0.3, 0.4]
+        }
+
+from sklearn.model_selection import RandomizedSearchCV, GridSearchCV
+from xgboost import XGBClassifier
+
+
+from datetime import datetime
+
+from sklearn.model_selection import StratifiedKFold
+
+
+train_flat = train_feature[0].reshape(train_feature[0].shape[0], -1)
+
+
+
+folds = 4
+param_comb = 20
+
+xgb = XGBClassifier()
+
+skf = StratifiedKFold(n_splits=folds, shuffle = True, random_state = 1001)
+
+random_search = RandomizedSearchCV(xgb, param_distributions=params, n_iter=param_comb, scoring='roc_auc', n_jobs=4, cv=skf.split(train_flat,train_labels), verbose=10, random_state=1001 )
+
+# # Here we go
+random_search.fit(train_flat, train_labels)
